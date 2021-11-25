@@ -3,6 +3,7 @@ var languageButtonsEl = document.querySelector('#language-buttons');
 var nameInputEl = document.querySelector('#username');
 var repoContainerEl = document.querySelector('#repos-container');
 var repoSearchTerm = document.querySelector('#repo-search-term');
+const apiKey = '89533c964936bfc40813a2cb34645564';
 
 var formSubmitHandler = function (event) {
   event.preventDefault();
@@ -10,7 +11,7 @@ var formSubmitHandler = function (event) {
   var username = nameInputEl.value.trim();
 
   if (username) {
-    getUserRepos(username);
+    getWeatherInfo(username);
 
     repoContainerEl.textContent = '';
     nameInputEl.value = '';
@@ -29,23 +30,21 @@ var buttonClickHandler = function (event) {
   }
 };
 
-var getUserRepos = function (user) {
-  var apiUrl = 'https://api.github.com/users/' + user + '/repos';
+var getWeatherInfo = function (city) {
+  var apiUrl = 'https://api.openweathermap.org/data/2.5/forecast?q=' + city + '&appid=' + apiKey;
 
   fetch(apiUrl)
-    .then(function (response) {
-      if (response.ok) {
-        response.json().then(function (data) {
-          displayRepos(data, user);
-        });
-      } else {
-        alert('Error: ' + response.statusText);
-      }
-    })
-    .catch(function (error) {
-      alert('Unable to connect to GitHub');
-    });
+  .then(function (response) {
+      console.log(apiUrl, "API fired")
+      // console.log(response)
+      return response.json();
+  })
+  .catch(function(err) {
+      console.error(err);
+  });
+
 };
+
 
 // var getFeaturedRepos = function (language) {
 //   var apiUrl = 'https://api.github.com/search/repositories?q=' + language + '+is:featured&sort=help-wanted-issues';
@@ -97,4 +96,4 @@ var displayRepos = function (repos, searchTerm) {
 };
 
 userFormEl.addEventListener('submit', formSubmitHandler);
-languageButtonsEl.addEventListener('click', buttonClickHandler);
+// languageButtonsEl.addEventListener('click', buttonClickHandler);
