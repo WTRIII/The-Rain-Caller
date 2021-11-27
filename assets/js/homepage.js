@@ -12,13 +12,6 @@ const weatherIcon = document.querySelector('#weathericon');
 
 // variables from object response
 
-let mainName;
-let mainDate;
-let mainTemp;
-let mainHumid;
-let mainWindSpeed;
-let mainDesc;
-let mainIcon;
 
 var formSubmitHandler = function (event) {
   event.preventDefault();
@@ -27,6 +20,7 @@ var formSubmitHandler = function (event) {
 
   if (cityName) {
     getWeatherInfo(cityName);
+    getForecastInfo(cityName);
 
     nameInputEl.value = '';
   } else {
@@ -44,21 +38,22 @@ var getWeatherInfo = function (city) {
       console.log(response)
       return response.json();
     })
-    .then (function (response){
-    mainName = response.name;
-    mainDate = moment().format("MM/DD/YYYY");
-    mainTemp = response.main.temp;
-    mainHumid = response.main.humidity;
-    mainWindSpeed = response.wind.speed;
-    mainDesc = response.weather[0].description;
-    mainIcon = `https://openweathermap.org/img/w/${response.weather[0].icon}.png`;
+    .then(function (response) {
 
-    cityInfo.textContent = mainName + ' ' + mainDate;
-    temp.textContent = 'Temperature: ' + mainTemp + 'F';
-    humidity.textContent = 'Humidity: ' + mainHumid + '%';
-    windspeed.textContent = 'Windspeed: ' + mainWindSpeed + 'MPH';
-    weatherDesc.textContent = 'Description: ' + mainDesc;
-    weatherIcon.setAttribute('src', mainIcon);
+      let mainName = response.name;
+      let mainDate = moment().format("MM/DD/YYYY");
+      let mainTemp = response.main.temp;
+      let mainHumid = response.main.humidity;
+      let mainWindSpeed = response.wind.speed;
+      let mainDesc = response.weather[0].description;
+      let mainIcon = `https://openweathermap.org/img/w/${response.weather[0].icon}.png`;
+
+      cityInfo.textContent = mainName + ' ' + mainDate;
+      temp.textContent = 'Temperature: ' + mainTemp + 'F';
+      humidity.textContent = 'Humidity: ' + mainHumid + '%';
+      windspeed.textContent = 'Windspeed: ' + mainWindSpeed + 'MPH';
+      weatherDesc.textContent = 'Description: ' + mainDesc;
+      weatherIcon.setAttribute('src', mainIcon);
 
     })
     .catch(function (err) {
@@ -67,6 +62,60 @@ var getWeatherInfo = function (city) {
 
 };
 
+var getForecastInfo = function (city) {
+  var apiUrl = 'https://api.openweathermap.org/data/2.5/forecast?q=' + city + '&units=imperial&exclude=minutely,hourly&appid=' + apiKey;
+
+  fetch(apiUrl)
+    .then(function (response) {
+      console.log(apiUrl, "API fired")
+      // console.log(response)
+      return response.json();
+    })
+    .then(function (response) {
+      const forecastApiCall = response.list.splice(3, 11, 17, 27, 35);
+
+      for (let i = 0; i < forecastApiCall.length; i++) {
+        let forecastArr = forecastApiCall[i];
+        console.log("FIVE DAY ARRAY: ", forecastArr)
+
+      let forecastDate = moment().add(i + 1, 'days').format("MM/DD/YYYY");
+      let forecastTemp = 'Temperature' + forecastArr.main.temp + ' F';
+      let forecastHumidity = 'Humidity: ' + forecastArr.main.humidity + '%';
+      let forecastWind ='Windspeed: ' + forecastArr.wind.speed + ' MPH';
+      let forecastDescr = 'Description: ' + forecastArr.weather[0].description;
+
+      let cardFormat = document.createElement('div');
+      cardFormat.classList.add('col-md');
+      let card = document.createElement('div');
+      card.classList.add('card');
+      let cardBody = document.createElement('div');
+      cardBody.classList.add('card-body');
+
+      let cardDate = document.createElement('h4');
+      let cardTemp = document.createElement('li');
+      let cardHumidity = document.createElement('li');
+      let cardWindSpeed = document.createElement('li');
+      let cardDescr = document.createElement('li');
+
+      cardDate.textContent = forecastDate;
+      cardTemp.textContent = forecastTemp;
+      cardHumidity.textContent = forecastHumidity;
+      cardWindSpeed.textContent = forecastWind;
+      cardDescr.textContent = forecastDescr;
+
+      const forecastContainer = document.querySelector('#forecastcontainer');
+      cardFormat.append(card);
+      card.append(cardBody);
+      cardBody.append(cardDate, cardTemp, cardHumidity, cardWindSpeed, cardDescr)
+      forecastContainer.append(cardFormat);
+
+      }
+    })
+    .catch(function (err) {
+      console.error(err);
+    });
+
+};
 
 
 userFormEl.addEventListener('submit', formSubmitHandler);
