@@ -1,4 +1,37 @@
-# The-Rain-Caller
+# The-Rain-Caller (Rain Scryer)
+
+## Summary
+
+Client requested an app that fetched 3rd party api calls that fetched data for current and 5-day weather forecast. The application created provides that functionality.
+
+Link to live app: https://wtriii.github.io/The-Rain-Caller/
+
+Features Implemented:
+- 1 api call to find current weather based on user search of a city
+- 1 api call to find a weather forecast for the searched city
+- both apis fire when the search is run
+- both apis return information and populate on the page
+
+Limitations:
+
+- Currently, a 5-day/3hour weather forecast api is used. There is no efficient way to break this down into 1 entry daily, so the forecast is in 3-hour increments over 5 days.
+- no localstorage implemented
+
+### Landing Page Image
+![screenshot 1: home page](references/homepage.png)
+
+### Search Result Image
+![screenshot 2: search results](references/search-results.png)
+
+## Help Received:
+
+I received assistance from Mitchell Robbins on the proper formatting of running an API call as well as reading the docs on each api. He also assisting in troubleshooting errors in my code. 
+
+I used AskBCS for assistance on cutting down the number of entries, but they suggested that I use an incompatible api that would require another api for my app to be user-friendly (not use lat/long for search parameters). 
+
+----------
+# Original User Story Follows:
+----------
 
 # 06 Server-Side APIs: Weather Dashboard
 
