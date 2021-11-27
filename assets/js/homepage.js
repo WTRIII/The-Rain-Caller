@@ -1,99 +1,73 @@
 var userFormEl = document.querySelector('#user-form');
-var languageButtonsEl = document.querySelector('#language-buttons');
-var nameInputEl = document.querySelector('#username');
-var repoContainerEl = document.querySelector('#repos-container');
-var repoSearchTerm = document.querySelector('#repo-search-term');
+var nameInputEl = document.querySelector('#cityname');
 const apiKey = '89533c964936bfc40813a2cb34645564';
+
+// DOM reference variables
+const cityInfo = document.querySelector('#namedate');
+const temp = document.querySelector('#temp');
+const humidity = document.querySelector('#humidity');
+const windspeed = document.querySelector('#windspeed');
+const weatherDesc = document.querySelector('#description');
+const weatherIcon = document.querySelector('#weathericon');
+
+// variables from object response
+
+let mainName;
+let mainDate;
+let mainTemp;
+let mainHumid;
+let mainWindSpeed;
+let mainDesc;
+let mainIcon;
 
 var formSubmitHandler = function (event) {
   event.preventDefault();
 
-  var username = nameInputEl.value.trim();
+  var cityName = nameInputEl.value.trim();
 
-  if (username) {
-    getWeatherInfo(username);
+  if (cityName) {
+    getWeatherInfo(cityName);
 
-    repoContainerEl.textContent = '';
     nameInputEl.value = '';
   } else {
-    alert('Please enter a GitHub username');
+    alert('Please enter a city name');
   }
 };
 
-var buttonClickHandler = function (event) {
-  var language = event.target.getAttribute('data-language');
-
-  if (language) {
-    getFeaturedRepos(language);
-
-    repoContainerEl.textContent = '';
-  }
-};
 
 var getWeatherInfo = function (city) {
-  var apiUrl = 'https://api.openweathermap.org/data/2.5/forecast?q=' + city + '&appid=' + apiKey;
+  var apiUrl = 'https://api.openweathermap.org/data/2.5/weather?q=' + city + '&units=imperial&exclude=minutely,hourly&appid=' + apiKey;
 
   fetch(apiUrl)
-  .then(function (response) {
+    .then(function (response) {
       console.log(apiUrl, "API fired")
-      // console.log(response)
+      console.log(response)
       return response.json();
-  })
-  .catch(function(err) {
+    })
+    .then (function (response){
+    mainName = response.name;
+    mainDate = moment().format("MM/DD/YYYY");
+    mainTemp = response.main.temp;
+    mainHumid = response.main.humidity;
+    mainWindSpeed = response.wind.speed;
+    mainDesc = response.weather[0].description;
+    mainIcon = `https://openweathermap.org/img/w/${response.weather[0].icon}.png`;
+
+    cityInfo.textContent = mainName + ' ' + mainDate;
+    temp.textContent = 'Temperature: ' + mainTemp + 'F';
+    humidity.textContent = 'Humidity: ' + mainHumid + '%';
+    windspeed.textContent = 'Windspeed: ' + mainWindSpeed + 'MPH';
+    weatherDesc.textContent = 'Description: ' + mainDesc;
+    weatherIcon.setAttribute('src', mainIcon);
+
+    })
+    .catch(function (err) {
       console.error(err);
-  });
+    });
 
 };
 
 
-// var getFeaturedRepos = function (language) {
-//   var apiUrl = 'https://api.github.com/search/repositories?q=' + language + '+is:featured&sort=help-wanted-issues';
-
-//   fetch(apiUrl).then(function (response) {
-//     if (response.ok) {
-//       response.json().then(function (data) {
-//         displayRepos(data.items, language);
-//       });
-//     } else {
-//       alert('Error: ' + response.statusText);
-//     }
-//   });
-// };
-
-var displayRepos = function (repos, searchTerm) {
-  if (repos.length === 0) {
-    repoContainerEl.textContent = 'No repositories found.';
-    return;
-  }
-
-  repoSearchTerm.textContent = searchTerm;
-
-  for (var i = 0; i < repos.length; i++) {
-    var repoName = repos[i].owner.login + '/' + repos[i].name;
-
-    var repoEl = document.createElement('div');
-    repoEl.classList = 'list-item flex-row justify-space-between align-center';
-
-    var titleEl = document.createElement('span');
-    titleEl.textContent = repoName;
-
-    repoEl.appendChild(titleEl);
-
-    var statusEl = document.createElement('span');
-    statusEl.classList = 'flex-row align-center';
-
-    if (repos[i].open_issues_count > 0) {
-      statusEl.innerHTML =
-        "<i class='fas fa-times status-icon icon-danger'></i>" + repos[i].open_issues_count + ' issue(s)';
-    } else {
-      statusEl.innerHTML = "<i class='fas fa-check-square status-icon icon-success'></i>";
-    }
-
-    repoEl.appendChild(statusEl);
-
-    repoContainerEl.appendChild(repoEl);
-  }
-};
 
 userFormEl.addEventListener('submit', formSubmitHandler);
-// languageButtonsEl.addEventListener('click', buttonClickHandler);
+
