@@ -63,7 +63,8 @@ var getWeatherInfo = function (city) {
 };
 
 var getForecastInfo = function (city) {
-  var apiUrl = 'https://api.openweathermap.org/data/2.5/forecast?q=' + city + '&units=imperial&exclude=minutely,hourly&appid=' + apiKey;
+  var apiUrl = 'https://api.openweathermap.org/data/2.5/forecast?q=' + city + '&units=imperial&appid=' + apiKey;
+  
 
   fetch(apiUrl)
     .then(function (response) {
@@ -72,13 +73,14 @@ var getForecastInfo = function (city) {
       return response.json();
     })
     .then(function (response) {
-      const forecastApiCall = response.list.splice(3, 11, 17, 27, 35);
+
+      const forecastApiCall = response.list
 
       for (let i = 0; i < forecastApiCall.length; i++) {
         let forecastArr = forecastApiCall[i];
         console.log("FIVE DAY ARRAY: ", forecastArr)
 
-      let forecastDate = moment().add(i + 1, 'days').format("MM/DD/YYYY");
+      let forecastDate = forecastArr.dt_txt;
       let forecastTemp = 'Temperature' + forecastArr.main.temp + ' F';
       let forecastHumidity = 'Humidity: ' + forecastArr.main.humidity + '%';
       let forecastWind ='Windspeed: ' + forecastArr.wind.speed + ' MPH';
